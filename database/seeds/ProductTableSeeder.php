@@ -21,7 +21,7 @@ class ProductTableSeeder extends Seeder
         for ($i = 0; $i < 50; $i++) {
             Product::create([
                 'name' => $faker->name,
-                'amount' => $faker->numberBetween(3,15),
+                'amount' => $faker->numberBetween(0,15),
             ]);
         }
     }

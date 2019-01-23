@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductResource;
 use App\Model\Product;
+use App\Services\ProductService;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +17,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Product::all();
+        return new ProductResource(Product::all());
     }
 
     /**
@@ -39,7 +42,7 @@ class ProductController extends Controller
             'name' => $request->name,
             'amount'=> $request->amount,
         ]);
-         $product->save();
+        new ProductResource($product->save());
         return http_response_code(200);
     }
 
@@ -47,12 +50,13 @@ class ProductController extends Controller
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Product[]|\Illuminate\Database\Eloquent\Collection
      */
     public function show($id)
     {
         $product = Product::findOrFail($id);
-        return $product;
+        $collection = new ProductResource($product);
+        return $collection->jsonSerialize();
     }
 
     /**
@@ -63,8 +67,6 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $product = Product::findOrFail($id);
-        return $product;
     }
 
     /**
@@ -77,7 +79,8 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
-        $product->update($request->all());
+        $collection = new ProductResource($product->update($request->all()));
+        $collection;
         return http_response_code(201);
     }
 
@@ -90,8 +93,25 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
-        $product->delete();
+        new ProductResource($product->delete());
 
-        return http_send_status(204);
+        return http_response_code(204);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Product[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function getMinAmount(ProductService $productService){
+        return new ProductResource($productService->getAllByMinFive());
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Product[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function getWithNoResultAmount(ProductService $productService){
+        return new ProductResource($productService->getWithNoResultAmount());
     }
 }

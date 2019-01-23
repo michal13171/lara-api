@@ -14,5 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
-Route::resource('/product', 'ProductController');
-Route::post('product/save', 'ProductController@store');
+Route::resource('/api/product', 'ProductController');
+Route::get('/api/product/max/value', 'ProductController@getMinAmount')->name('product.getMinAmount');
+Route::get('/api/product/none/value', 'ProductController@getWithNoResultAmount')->name('product.getWithNoResultAmount');
+
